@@ -14,7 +14,7 @@ insert into tUsuarios (nombre, apellidos, email, contraseña) values
 ('Lucía', 'Fernández', 'jlucia.fernandez@example.com', 'contrasena654');
 
 create table tPelículas(
-    id int primary key auto_increment, 
+    id_pelicula int primary key auto_increment, 
     nombre varchar(50) not null,
     url_imagen varchar(200) not null,
     director varchar(100) not null,
@@ -35,7 +35,7 @@ create table tComentarios(
     usuario_id int,
     pelicula_id int not null,
     foreign key (usuario_id) references tUsuarios(id),
-    foreign key (pelicula_id) references tPeliculas(id)
+    foreign key (pelicula_id) references tPeliculas(id_pelicula)
 );
 
 
