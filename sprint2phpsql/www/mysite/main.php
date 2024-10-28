@@ -1,64 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ejercicios</title>
-        <style>
-            img{
-                width:100px;
-                height:100px;
-            }
-        </style>
-    </head>
-
-    <body>
-        <?php
-        $db = mysqli_connect('localhost', 'root', '1234', 'mysitedb') or die ('Fail');
-        ?>
-        </body>
-        
-        <h1>Conexión establecida</h1>
-        <?php
-
-            $query = 'SELECT * FROM tPeliculas';
-            $result = mysqli_query($db, $query) or die('Query error');
-            if ($result){
-                echo "<ul>";
-                while ($row = mysqli_fetch_array($result)){
-            
-                    echo "<li> Id película: " . $row['id_pelicula'] . "</li>";
-                    echo "<li> Nombre: " . $row['nombre'] . "</li>";
-                    echo "<li><img src= " . $row['url_imagen'] . "'/></li>";
-                    echo "<li>Director: " . $row['director'] . "</li>";
-                    echo "<li>Año de estreno: " . $row['anio:estreno'] . "</li>";
-                    echo "<br>";
-                }
-                echo "</ul>";
-            } else {
-                echo "<p>Error en la consulta: " . mysqli_error($db) . "</p>";
-            }
-            mysqli_close($db);
+<?php
+    $db = mysqli_connect('localhost', 'root', '1234', 'mysitedb') or die('Error al conectar a la base de datos');
 ?>
+<html>
+<head>
+    <title>Libros</title>
+</head>
+<body>
+    <h1>Lista de Libros</h1>
+    <ul>
+    <?php
+        $query = 'SELECT * FROM tLibros';
+        $result = mysqli_query($db, $query) or die('Error en la consulta: ' . mysqli_error($db));
+        
+        while ($row = mysqli_fetch_array($result)) {
+            echo "<li>";
+            echo "<h2>".$row['nombre']."</h2>";
+            echo "<img src='".$row['url_imagen']."' alt='Imagen del libro'>";
+            echo "<p>Autor: ".$row['autor']."</p>";
+            echo "<p>Año de publicación: ".$row['año_publicacion']."</p>";
+            echo "</li>";
+        }
+    ?>
+    </ul>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<?php
+    mysqli_close($db);
+?>
