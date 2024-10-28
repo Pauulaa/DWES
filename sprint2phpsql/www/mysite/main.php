@@ -15,7 +15,9 @@
         while ($row = mysqli_fetch_array($result)) {
             echo "<li>";
             echo "<h2>".$row['nombre']."</h2>";
+            echo "<br>";
             echo "<img src='".$row['url_imagen']."' alt='Imagen del libro'>";
+            echo "<a href=detail.php?id=".$row['id'].">Ver Detalles</a>";
             echo "<p>Autor: ".$row['autor']."</p>";
             echo "<p>Año de publicación: ".$row['año_publicacion']."</p>";
             echo "</li>";

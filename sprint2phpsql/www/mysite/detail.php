@@ -22,17 +22,17 @@
 <ul>
 <?php
     // Mostrar comentarios asociados al libro
-    $query2 = 'SELECT comentario, fecha FROM tComentarios WHERE libro_id='.$libro_id;
+    $query2 = 'SELECT * FROM tComentarios WHERE libro_id='.$libro_id;
     $result2 = mysqli_query($db, $query2) or die('Error en la consulta de comentarios');
-    
+    echo $result2;
     while ($row = mysqli_fetch_array($result2)) {
-        echo '<li>'.$row['comentario'].' <small>('.$row['fecha'].')</small></li>';
+        echo '<li>'.$row['comentario'].'</li>';
     }
 ?>
 </ul>
 
 <!-- Formulario para añadir un comentario -->
-<p>Deja un nuevo comentario:</p>
+<p>Deja un nuevo comentario:</p>                            
 <form action="/comment.php" method="post">
     <textarea rows="4" cols="50" name="new_comment"></textarea><br>
     <input type="hidden" name="libro_id" value="<?php echo $libro_id; ?>">
