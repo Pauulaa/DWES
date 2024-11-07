@@ -1,6 +1,6 @@
 <?php
 // Conexión a la base de datos
-$db = mysqli_connect('localhost', 'root', '1234', 'web_canciones') or die('Fail');
+$db = mysqli_connect('localhost', 'root', '1234', 'mysitedb') or die('Fail');
 
 // Recibir datos del formulario
 $email = $_POST['email'];
