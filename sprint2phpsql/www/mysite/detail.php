@@ -23,7 +23,7 @@
 <?php
     // Mostrar comentarios asociados al libro
     $query2 = 'SELECT * FROM tComentarios WHERE libro_id='.$libro_id;
-    $result2 = mysqli_query($db, $query2) or die('Error en la consulta de comentarios');
+    $result2 = mysqli_query($db, $query2) or die('Error en la consulta de comentarios: ' . mysqli_error($db));
     echo $result2;
     while ($row = mysqli_fetch_array($result2)) {
         echo '<li>'.$row['comentario'].'</li>';
