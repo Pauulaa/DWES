@@ -3,12 +3,28 @@
 <head><meta charset="UTF-8"></head>
 <body>
     <h1>Iniciar sesión</h1>
-    <form action="login.php" method="post">
+    <form onsubmit="return validateForm()" action="login.php" method="post">
         <!-- Campo de correo -->
-        <input name="email" type="email" placeholder="Correo" required><br>
-        <!-- Campo para la contraseña -->
-        <input name="password" type="password" placeholder="Contraseña" required><br>
+        <input id="email" name="email" type="email" placeholder="Correo"><br>
+        <!-- Campo de contraseña -->
+        <input id="password" name="password" type="password" placeholder="Contraseña"><br>
         <input type="submit" value="Iniciar sesión">
     </form>
+
+    <script>
+    function validateForm() {
+        var email = document.getElementById("email").value;
+        var password = document.getElementById("password").value;
+        // Comprobar si los campos están vacíos
+        if (email == "" || password == "") {
+            alert("Por favor, completa todos los campos.");
+            return false; // Detener el envío del formulario
+        }
+        return true;
+    }
+    </script>
 </body>
 </html>
+
+
+
