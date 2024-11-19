@@ -6,6 +6,7 @@ $db = mysqli_connect('localhost', 'root', '1234', 'mysitedb') or die('Error al c
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Obtener el ID del libro, comentario y usuario desde el formulario
     $libro_id = $_POST['libro_id'];
+    echo $libro_id;
     $comentario = mysqli_real_escape_string($db, $_POST['new_comment']); // Limpia el comentario para evitar inyecciones SQL
     $usuario_id = $_POST['usuario_id']; // Obtener el usuario_id desde el formulario
 

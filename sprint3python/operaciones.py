@@ -18,4 +18,3 @@ def division(a, b):
         return "Error: No se puede dividir por 0"
     else:
         return a / b
-
