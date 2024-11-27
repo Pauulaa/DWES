@@ -27,12 +27,13 @@ CREATE TABLE `tComentarios` (
   `comentario` varchar(2000) DEFAULT NULL,
   `usuario_id` int(11) DEFAULT NULL,
   `libro_id` int(11) NOT NULL,
+  `fecha` timestamp NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `usuario_id` (`usuario_id`),
   KEY `libro_id` (`libro_id`),
   CONSTRAINT `tComentarios_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `tUsuarios` (`id`),
   CONSTRAINT `tComentarios_ibfk_2` FOREIGN KEY (`libro_id`) REFERENCES `tLibros` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -42,11 +43,12 @@ CREATE TABLE `tComentarios` (
 LOCK TABLES `tComentarios` WRITE;
 /*!40000 ALTER TABLE `tComentarios` DISABLE KEYS */;
 INSERT INTO `tComentarios` VALUES
-(11,'Excelente libro, lo recomiendo',1,1),
-(12,'Un clásico que todos deberían leer',2,2),
-(13,'Muy entretenido y profundo',3,3),
-(14,'Me encantó la narrativa',4,4),
-(15,'Increíble desde el principio hasta el final',5,5);
+(11,'Excelente libro, lo recomiendo',1,1,'2024-11-13 11:10:05'),
+(12,'Un clásico que todos deberían leer',2,2,'2024-11-13 11:10:05'),
+(13,'Muy entretenido y profundo',3,3,'2024-11-13 11:10:05'),
+(14,'Me encantó la narrativa',4,4,'2024-11-13 11:10:05'),
+(15,'Increíble desde el principio hasta el final',5,5,'2024-11-13 11:10:05'),
+(16,'Prueba de POST al REST API',NULL,11,NULL);
 /*!40000 ALTER TABLE `tComentarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -97,7 +99,7 @@ CREATE TABLE `tUsuarios` (
   `contraseña` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -111,7 +113,9 @@ INSERT INTO `tUsuarios` VALUES
 (2,'Ana','López','alopez@example.com','password2'),
 (3,'Luis','Martínez','lmartinez@example.com','password3'),
 (4,'Marta','Pérez','mperez@example.com','password4'),
-(5,'Jorge','Fernández','jfernandez@example.com','password5');
+(5,'Jorge','Fernández','jfernandez@example.com','password5'),
+(11,NULL,NULL,'samuelimbecil@gmail.com','$2y$10$WS/uM2g7bRwAu4pMLksrkOHfmmiV/YuBjPjVbnyk98kpA/3t0Fk/q'),
+(12,NULL,NULL,'paulalopez@gmail.com','$2y$10$m.8hQt4FcMTAXDG0pGxHhOrTff40gE0l5nKiTEDw8OhKCT1tP1/2i');
 /*!40000 ALTER TABLE `tUsuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -124,4 +128,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-10-28 17:54:23
+-- Dump completed on 2024-11-27 14:52:51
