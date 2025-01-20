@@ -10,7 +10,7 @@ class Usuario(AbstractUser):
     rol = models.CharField(max_length=20, choices=ROL_CHOICES)
 
     def __str__(self):
-        return self.nombre
+        return self.username
 
 class Evento(models.Model):
     titulo = models.CharField(max_length=200)
@@ -43,6 +43,7 @@ class Reserva(models.Model):
 class Comentario(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="comentarios")
     evento = models.ForeignKey(Evento, on_delete=models.CASCADE, related_name="comentarios", null = True, blank= True)
+    texto = models.TextField()
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
