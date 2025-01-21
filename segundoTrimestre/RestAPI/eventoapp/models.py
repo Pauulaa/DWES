@@ -41,10 +41,10 @@ class Reserva(models.Model):
 
 
 class Comentario(models.Model):
+    texto = models.TextField(blank=True, null=True)
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="comentarios")
     evento = models.ForeignKey(Evento, on_delete=models.CASCADE, related_name="comentarios", null = True, blank= True)
-    texto = models.TextField()
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Comentario de {self.usuario} en {self.evento}"
+        return f"Comentario de {self.usuario} para {self.evento}"
