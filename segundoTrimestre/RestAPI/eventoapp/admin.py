@@ -20,7 +20,7 @@ admin.site.register(Evento, EventoAdmin)
 
 # Personalización del administrador para el modelo Reserva
 class ReservaAdmin(admin.ModelAdmin):
-    list_display = ('usuario', 'evento', 'entradas', 'estado')  # Mostrar estas columnas en la lista
+    list_display = ('pk','usuario', 'evento', 'entradas', 'estado')  # Mostrar estas columnas en la lista
     search_fields = ('usuario__username', 'evento__titulo')  # Buscar por nombre de usuario y título del evento
     list_filter = ('estado',)  # Filtrar por estado de la reserva
 
