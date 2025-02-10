@@ -33,7 +33,3 @@ urlpatterns = [
     path('registrar_usuario/', views.registrar_usuario, name='registrar_usuario'),
     path('admin/', admin.site.urls),
 ]
-
-
-
-
