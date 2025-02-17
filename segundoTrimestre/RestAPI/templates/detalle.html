@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Evento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #3f51b5;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+        }
+        #detalle-evento {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-wrap: wrap; /* Para que los elementos se ajusten en pantallas pequeñas */
+        }
+        .evento-imagen {
+            flex: 1 1 300px; /* Flexibilidad para permitir el ajuste automático */
+            margin-right: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .evento-imagen img {
+            max-width: 100%; /* La imagen no se sale del contenedor */
+            height: auto;
+            border-radius: 5px;
+        }
+        .evento-detalles {
+            flex: 2 1 400px; /* El área de detalles ocupa un poco más de espacio */
+        }
+        .evento-detalles p {
+            margin: 10px 0;
+        }
+        form {
+            margin-top: 20px;
+        }
+        form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        form input, form button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        form button {
+            background-color: #3f51b5;
+            color: white;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            /* Diseño responsive para pantallas pequeñas */
+            #detalle-evento {
+                flex-direction: column;
+            }
+            .evento-imagen {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>{{ evento.titulo }}</h1>
+    </header>
+    <div id="detalle-evento">
+        <!-- Imagen del evento -->
+        <div class="evento-imagen">
+            <img src="{{ evento.imagen_url }}" alt="{{ evento.titulo }}">
+        </div>
+
+        <!-- Detalles del evento -->
+        <div class="evento-detalles">
+            <p><strong>Descripción:</strong> {{ evento.descripcion }}</p>
+            <p><strong>Fecha y hora:</strong> {{ evento.fecha_hora }}</p>
+            <p><strong>Capacidad:</strong> {{ evento.capacidad }}</p>
+            <p><strong>Película:</strong> {{ evento.pelicula }}</p>
+            <p><strong>Organizador:</strong> {{ evento.organizador }}</p>
+            <hr>
+            <h2>Hacer una Reserva</h2>
+            <form method="POST" action="{% url 'crear_reserva' evento.id %}">
+                {% csrf_token %}
+                <label for="entradas">Número de Entradas:</label>
+                <input type="number" name="entradas" id="entradas" min="1" max="{{ evento.capacidad }}" required>
+                <button type="submit">Reservar</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

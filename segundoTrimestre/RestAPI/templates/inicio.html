@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Eventos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #3f51b5;
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+        }
+        #contenedor-eventos {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .evento {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .evento h2 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+        .evento p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .evento img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .paginacion {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .paginacion button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            background-color: #3f51b5;
+            color: white;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .paginacion button:disabled {
+            background-color: #bbb;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Lista de Eventos</h1>
+    </header>
+    <div id="contenedor-eventos">
+        <!-- Aquí puedes insertar los datos de los eventos directamente desde Django -->
+        {% for evento in eventos %}
+        <div class="evento">
+            <h2>{{ evento.titulo }}</h2>
+            <p><img src = "{{ evento.imagen_url }}"/></p>
+            <p><strong>Descripción:</strong> {{ evento.descripcion }}</p>
+            <p><strong>Fecha y hora:</strong> {{ evento.fecha_hora }}</p>
+            <p><strong>Capacidad:</strong> {{ evento.capacidad }}</p>
+            <p><strong>Película:</strong> {{ evento.pelicula }}</p>
+            <p><strong>Organizador:</strong> {{ evento.organizador }}</p>
+            <a href="{% url 'detalle_evento' evento.id%}">Hacer una reserva</a>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="paginacion">
+        <button {% if not eventos.has_previous %}disabled{% endif %}>
+            <a href="?page={{ eventos.previous_page_number }}">Anterior</a>
+        </button>
+        <button {% if not eventos.has_next %}disabled{% endif %}>
+            <a href="?page={{ eventos.next_page_number }}">Siguiente</a>
+        </button>
+    </div>
+</body>
+</html>

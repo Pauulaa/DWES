@@ -9,6 +9,9 @@ from django.shortcuts import render, get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework import status
+from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from django.contrib.auth import authenticate, login
 
 
 # Create your views here.
@@ -130,6 +133,11 @@ class ListarEventosAPIView(APIView):
 
        return Response(data)
 
+
+@login_required
+def inicio_view(request):
+    eventos = Evento.objects.all()
+    return render(request, 'inicio.html', {'eventos': eventos})
 
 
 
@@ -347,6 +355,46 @@ class CrearReservaAPIView(APIView):
                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+def detalle_evento_view(request, evento_id):
+    evento = get_object_or_404(Evento, id=evento_id)
+    return render(request, 'detalle.html', {'evento': evento})
+
+def crear_reserva_view(request, evento_id):
+    """
+    Crea una reserva del evento para el usuario autenticado.
+    """
+    if request.method == "POST":
+        entradas = int(request.POST.get("entradas"))
+        evento = get_object_or_404(Evento, id=evento_id)
+
+        if entradas > evento.capacidad:
+            return render(request, 'detalle.html', {
+                'evento': evento,
+                'error': "No hay suficientes entradas disponibles."
+            })
+
+        # Crear la reserva
+        Reserva.objects.create(
+            usuario=request.user,
+            evento=evento,
+            entradas=entradas
+        )
+
+        # Redirigir al panel de usuario
+        return HttpResponseRedirect("/panel-usuario/")  # URL para el panel del usuario
+
+
+@login_required
+def reservas_usuario_view(request):
+    """
+    Muestra las reservas realizadas por el usuario autenticado.
+    """
+    reservas = Reserva.objects.filter(usuario=request.user).select_related('evento')
+
+    return render(request, 'panel_usuario.html', {
+        'reservas': reservas
+    })
+
 
 
 
@@ -552,6 +600,53 @@ class LoginUsuarioAPIView(APIView):
                            status=status.HTTP_401_UNAUTHORIZED)
        except Exception as e:
            return Response({"error": f"Error inesperado: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+@csrf_exempt
+def login_view(request):
+    if request.method == "POST":
+        try:
+            # 1. Obtener datos del POST o del cuerpo JSON
+            if request.content_type == 'application/json':
+                data = json.loads(request.body.decode('utf-8'))
+            else:
+                data = request.POST
+
+            username = data.get('username')
+            password = data.get('password')
+
+            # 2. Validar que ambos campos estén presentes
+            if not username or not password:
+                return JsonResponse({'error': 'Debes proporcionar un username y una contraseña.'}, status=400)
+
+            # 3. Autenticar al usuario
+            user = authenticate(request, username=username, password=password)
+
+            if user is not None:
+                # 4. Crear (o recuperar) el token para el usuario
+                from rest_framework.authtoken.models import Token
+                token, _ = Token.objects.get_or_create(user=user)
+
+                # 5. Iniciar sesión en el sistema Django
+                login(request, user)
+
+                # 6. Responder con el token en JSON
+                return JsonResponse({'token': token.key}, status=200)
+
+            # Si el usuario no se autentica (credenciales incorrectas)
+            return JsonResponse({'error': 'Credenciales inválidas'}, status=401)
+
+        except Exception as e:
+            # Manejo de errores inesperados
+            return JsonResponse({'error': f'Error inesperado: {str(e)}'}, status=500)
+
+    # Si no es una solicitud POST, renderizar el formulario de inicio de sesión
+    return render(request, 'login.html')
+
+
+
+
 
 
 

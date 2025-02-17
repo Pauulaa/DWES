@@ -17,8 +17,6 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-
-
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework.permissions import AllowAny
@@ -37,9 +35,9 @@ schema_view = get_schema_view(
 
 from rest_framework.authtoken.views import ObtainAuthToken
 from eventoapp.views import (ListarEventosAPIView, ListarReservasAPIView, \
-   ListarComentariosAPIView, RegistrarUsuarioAPIView, LoginUsuarioAPIView, CrearComentarioAPIView, CrearReservaAPIView, \
+   ListarComentariosAPIView, RegistrarUsuarioAPIView, login_view, inicio_view, detalle_evento_view, crear_reserva_view, LoginUsuarioAPIView, CrearComentarioAPIView, CrearReservaAPIView, \
    CrearEventoAPIView, EliminarEventoAPIView, CancelarReservaAPIView, ActualizarEventoAPIView, \
-   ActualizarEstadoReservaAPIView)
+   ActualizarEstadoReservaAPIView, reservas_usuario_view)
 
 
 urlpatterns = [
@@ -53,9 +51,14 @@ urlpatterns = [
    path('reservas/<int:reserva_id>/eliminar/', CancelarReservaAPIView.as_view(), name='cancelar_reserva'),
    path('comentarios/<int:evento_id>/', ListarComentariosAPIView.as_view(), name='listar_comentarios'),
    path('comentarios/crear/', CrearComentarioAPIView.as_view(), name='crear_comentario'),
-   path('login/', ObtainAuthToken.as_view(), name='login_usuario'),
+   path('inicio/', inicio_view, name='inicio_vista'),
+   path('login/', login_view, name='login_vista'),
+   path('detalle/<int:evento_id>/', detalle_evento_view, name='detalle_evento'),
+   path('reserva/<int:evento_id>/', crear_reserva_view, name='crear_reserva'),
+   path('panel-usuario/', reservas_usuario_view, name='panel_usuario'),
+   path('login-api/', LoginUsuarioAPIView.as_view(), name='login_usuario'),
    path('registrar/', RegistrarUsuarioAPIView.as_view(), name='registrar_usuario'),
-   path('api-token-auth/', ObtainAuthToken.as_view(), name='api_token_auth'),
+   # path('api-token-auth/', ObtainAuthToken.as_view(), name='api_token_auth'),
    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
    path('admin/', admin.site.urls),
