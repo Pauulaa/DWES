@@ -1,112 +1,172 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalles del Evento</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-color: #f9f9f9;
+            color: #333;
         }
-        header {
-            background-color: #3f51b5;
-            color: white;
-            padding: 15px 20px;
-            text-align: center;
-        }
+
         h1 {
-            margin: 0;
+            text-align: center;
+            color: #007bff;
+            margin-top: 20px;
+            font-size: 2.5em;
         }
-        #detalle-evento {
+
+        body > *:not(h1) {
             max-width: 800px;
             margin: 20px auto;
-            padding: 20px;
-            background: white;
+            padding: 0 15px;
+            background-color: #fff;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-wrap: wrap; /* Para que los elementos se ajusten en pantallas pequeñas */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        .evento-imagen {
-            flex: 1 1 300px; /* Flexibilidad para permitir el ajuste automático */
-            margin-right: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .evento-imagen img {
-            max-width: 100%; /* La imagen no se sale del contenedor */
+
+        p img {
+            display: block;
+            margin: 20px auto;
+            max-width: 500px;
             height: auto;
-            border-radius: 5px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
         }
-        .evento-detalles {
-            flex: 2 1 400px; /* El área de detalles ocupa un poco más de espacio */
-        }
-        .evento-detalles p {
+
+        p {
+            font-size: 1em;
+            line-height: 1.6;
             margin: 10px 0;
         }
-        form {
-            margin-top: 20px;
+
+        p strong {
+            color: #007bff;
         }
+
+        form {
+            margin-top: 30px;
+        }
+
         form label {
             display: block;
-            margin-bottom: 5px;
             font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            color: #555;
         }
-        form input, form button {
-            width: 100%;
+
+        form input {
+            width: calc(100% - 20px);
             padding: 10px;
-            margin-bottom: 10px;
             border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: 4px;
+            font-size: 1em;
         }
+
         form button {
-            background-color: #3f51b5;
-            color: white;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 1em;
             cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            width: 100%;
         }
-        @media (max-width: 768px) {
-            /* Diseño responsive para pantallas pequeñas */
-            #detalle-evento {
-                flex-direction: column;
-            }
-            .evento-imagen {
-                margin-right: 0;
-                margin-bottom: 20px;
-            }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+        button a {
+            text-decoration: none;
+            color: white;
+        }
+
+        p a {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1em;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        p a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>{{ evento.titulo }}</h1>
-    </header>
-    <div id="detalle-evento">
-        <!-- Imagen del evento -->
-        <div class="evento-imagen">
-            <img src="{{ evento.imagen_url }}" alt="{{ evento.titulo }}">
-        </div>
 
-        <!-- Detalles del evento -->
-        <div class="evento-detalles">
-            <p><strong>Descripción:</strong> {{ evento.descripcion }}</p>
-            <p><strong>Fecha y hora:</strong> {{ evento.fecha_hora }}</p>
-            <p><strong>Capacidad:</strong> {{ evento.capacidad }}</p>
-            <p><strong>Película:</strong> {{ evento.pelicula }}</p>
-            <p><strong>Organizador:</strong> {{ evento.organizador }}</p>
-            <hr>
-            <h2>Hacer una Reserva</h2>
-            <form method="POST" action="{% url 'crear_reserva' evento.id %}">
-                {% csrf_token %}
-                <label for="entradas">Número de Entradas:</label>
-                <input type="number" name="entradas" id="entradas" min="1" max="{{ evento.capacidad }}" required>
-                <button type="submit">Reservar</button>
-            </form>
-        </div>
-    </div>
+    <h1>{{ eventos.titulo }}</h1>
+    <p><img src="{{ eventos.imagen_url }}"/></p>
+    <p><strong>Fecha:</strong> {{ eventos.fecha_hora }}</p>
+    <p><strong>Descripción:</strong> {{ eventos.descripcion }}</p>
+
+    <h2>Reserva tu lugar</h2>
+    <form id="reserve-form">
+        {% csrf_token %}
+        <label for="nombre">Tu Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required><br><br>
+
+        <label for="email">Tu Correo Electrónico:</label>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="cantidad">Cantidad de Boletos:</label>
+        <input type="number" id="cantidad" name="cantidad" required><br><br>
+
+        <button type="submit">Reservar</button>
+    </form>
+
+    <p><a href="{% url 'listar_eventos' %}">Volver a la lista de eventos</a></p>
+
+    <script>
+        document.getElementById("reserve-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                alert("Por favor, inicia sesión antes de realizar una reserva.");
+                return;
+            }
+
+            const eventoID = "{{ eventos.id }}";
+            const entradas = document.getElementById('cantidad').value;
+
+            try {
+                const response = await fetch("/reservas/crear/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": 'Token ' + token,
+                        "X-CSRFToken": csrftoken
+                    },
+                    body: JSON.stringify({
+                        entradas_reservadas: parseInt(entradas, 10),
+                        evento_id: eventoID
+                    }),
+                });
+
+                if (response.ok) {
+                    alert("Reserva Exitosa.");
+                    window.location.href = "/panel_usuario/";
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.error || "Error desconocido al realizar la reserva.");
+                }
+            } catch (error) {
+                alert("Error de conexión con el servidor.");
+                console.error("Error:", error);
+            }
+        });
+    </script>
 </body>
 </html>

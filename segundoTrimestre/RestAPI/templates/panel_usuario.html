@@ -7,63 +7,135 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-        header {
-            background-color: #4caf50;
-            color: white;
-            padding: 15px 20px;
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
             text-align: center;
         }
         h1 {
-            margin: 0;
-        }
-        #reservas {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .reserva {
-            border-bottom: 1px solid #ddd;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-        }
-        .reserva:last-child {
-            border-bottom: none;
-        }
-        .reserva h2 {
-            margin: 0;
             color: #333;
         }
-        .reserva p {
-            margin: 5px 0;
+        .alertaError {
+            background-color: #ffdddd;
+            color: #d8000c;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #d8000c;
+        }
+        .tabla {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .tabla th, .tabla td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        .tabla th {
+            background-color: #007bff;
+            color: white;
+        }
+        .tabla tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .tabla tr:hover {
+            background-color: #ddd;
+        }
+        .text-center {
+            text-align: center;
+            font-weight: bold;
             color: #555;
         }
     </style>
 </head>
 <body>
-    <header>
+    <div class="container">
         <h1>Mis Reservas</h1>
-    </header>
-    <div id="reservas">
-        <h2>Lista de Reservas</h2>
-        {% if reservas.exists %}
-            {% for reserva in reservas %}
-                <div class="reserva">
-                    <h2>{{ reserva.evento.titulo }}</h2>
-                    <p><strong>Fecha y hora:</strong> {{ reserva.evento.fecha_hora }}</p>
-                    <p><strong>Número de entradas:</strong> {{ reserva.entradas }}</p>
-                    <p><strong>Reservado el:</strong> {% now "d M Y H:i" %}</p>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p>Aún no has realizado ninguna reserva.</p>
-        {% endif %}
+        <div id="error-message" class="alertaError" style="display: none;"></div>
+        <table class="tabla">
+            <thead>
+                <tr>
+                    <th>ID Reserva</th>
+                    <th>Evento</th>
+                    <th>Entradas</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody id="reservas-tbody">
+                <tr>
+                    <td colspan="4" class="text-center">Cargando reservas...</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                document.getElementById('error-message').textContent = 'Error: No estás autenticado. Inicia sesión.';
+                document.getElementById('error-message').style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('/reservas/', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Token ' + token,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        alert('Tu sesión ha expirado. Inicia sesión nuevamente.');
+                        localStorage.removeItem('token');
+                        window.location.href = '/login';
+                    } else {
+                        alert('Error al cargar reservas.');
+                    }
+                    return;
+                }
+
+                const data = await response.json();
+                renderReservas(data.reservas);
+            } catch (error) {
+                console.error('Error al obtener reservas:', error);
+                alert('No se pudieron cargar las reservas.');
+            }
+        });
+
+        function renderReservas(reservas) {
+            const tableBody = document.getElementById('reservas-tbody');
+            if (!reservas || reservas.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="4" class="text-center">No tienes reservas actualmente.</td></tr>`;
+                return;
+            }
+
+            tableBody.innerHTML = reservas.map(reserva => `
+                <tr>
+                    <td>${reserva.id}</td>
+                    <td>${reserva.evento}</td>
+                    <td>${reserva.entradas_reservadas}</td>
+                    <td>${reserva.estado}</td>
+                </tr>
+            `).join('');
+        }
+    </script>
 </body>
 </html>

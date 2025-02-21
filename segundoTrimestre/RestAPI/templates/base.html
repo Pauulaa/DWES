@@ -1,9 +1,25 @@
 <!DOCTYPE html>
-<html>
+{% load static %} <!-- Cargar estáticos en el archivo base -->
+<html lang="es">
 <head>
-    <title>{% block title %}Mi sitio{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Gestión de Eventos{% endblock %}</title>
 </head>
 <body>
-    {% block content %}{% endblock %}
+    <!-- Barra de navegación -->
+    <header>
+    </header>
+
+    <!-- Bloque de contenido (modificable en las plantillas específicas) -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Pie de página -->
+    <footer>
+        <p>&copy; 2025 Gestión de Eventos</p>
+    </footer>
 </body>
 </html>

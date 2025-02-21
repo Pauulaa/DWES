@@ -134,7 +134,6 @@ class ListarEventosAPIView(APIView):
        return Response(data)
 
 
-@login_required
 def inicio_view(request):
     eventos = Evento.objects.all()
     return render(request, 'inicio.html', {'eventos': eventos})
@@ -359,14 +358,20 @@ def detalle_evento_view(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
     return render(request, 'detalle.html', {'evento': evento})
 
-def crear_reserva_view(request, evento_id):
+def crear_reserva_view(request):
     """
-    Crea una reserva del evento para el usuario autenticado.
+    Crea una reserva para el evento que está siendo visualizado.
     """
     if request.method == "POST":
-        entradas = int(request.POST.get("entradas"))
+        # Obtener el contexto del evento actual desde la URL o sesión
+        evento_id = request.session.get('evento_id')  # Supongamos que lo guardas en la sesión
         evento = get_object_or_404(Evento, id=evento_id)
 
+        # Leer la cantidad en el cuerpo de la solicitud (es JSON en el frontend)
+        body = json.loads(request.body)
+        entradas = int(body.get("cantidad"))
+
+        # Validar si hay suficientes entradas disponibles
         if entradas > evento.capacidad:
             return render(request, 'detalle.html', {
                 'evento': evento,
@@ -375,13 +380,32 @@ def crear_reserva_view(request, evento_id):
 
         # Crear la reserva
         Reserva.objects.create(
-            usuario=request.user,
+            usuario=request.user,  # Usuario autenticado
             evento=evento,
             entradas=entradas
         )
 
-        # Redirigir al panel de usuario
-        return HttpResponseRedirect("/panel-usuario/")  # URL para el panel del usuario
+        # Redirigir al panel del usuario
+        return HttpResponseRedirect("/panel_usuario/")  # Cambia esto si tu panel tiene otra ruta
+
+    return render(request, 'detalle.html', {
+        'error': "Método no permitido.",
+    })
+
+
+def detalle_evento_view(request, evento_id):
+    """
+    Renderiza los detalles de un evento.
+    """
+    evento = get_object_or_404(Evento, id=evento_id)
+
+    # Guarda el ID del evento en la sesión
+    request.session['evento_id'] = evento.id
+
+    # Renderiza la página de detalles
+    return render(request, 'detalle.html', {'evento': evento})
+
+
 
 
 @login_required
@@ -603,52 +627,8 @@ class LoginUsuarioAPIView(APIView):
 
 
 
-@csrf_exempt
 def login_view(request):
-    if request.method == "POST":
-        try:
-            # 1. Obtener datos del POST o del cuerpo JSON
-            if request.content_type == 'application/json':
-                data = json.loads(request.body.decode('utf-8'))
-            else:
-                data = request.POST
-
-            username = data.get('username')
-            password = data.get('password')
-
-            # 2. Validar que ambos campos estén presentes
-            if not username or not password:
-                return JsonResponse({'error': 'Debes proporcionar un username y una contraseña.'}, status=400)
-
-            # 3. Autenticar al usuario
-            user = authenticate(request, username=username, password=password)
-
-            if user is not None:
-                # 4. Crear (o recuperar) el token para el usuario
-                from rest_framework.authtoken.models import Token
-                token, _ = Token.objects.get_or_create(user=user)
-
-                # 5. Iniciar sesión en el sistema Django
-                login(request, user)
-
-                # 6. Responder con el token en JSON
-                return JsonResponse({'token': token.key}, status=200)
-
-            # Si el usuario no se autentica (credenciales incorrectas)
-            return JsonResponse({'error': 'Credenciales inválidas'}, status=401)
-
-        except Exception as e:
-            # Manejo de errores inesperados
-            return JsonResponse({'error': f'Error inesperado: {str(e)}'}, status=500)
-
-    # Si no es una solicitud POST, renderizar el formulario de inicio de sesión
-    return render(request, 'login.html')
-
-
-
-
-
-
+    return render(request, 'login.html')  # Servir el archivo login.html
 
 
 class RegistrarUsuarioAPIView(APIView):

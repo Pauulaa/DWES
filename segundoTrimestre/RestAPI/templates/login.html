@@ -1,115 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            flex-direction: column;
-        }
-        form {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
-            text-align: center;
-        }
-        input {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            background-color: #007BFF;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            width: 100%;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        p.error {
-            color: red;
-        }
-    </style>
-    <script>
-        async function handleLogin(event) {
-            event.preventDefault(); // Evita el comportamiento predeterminado del formulario
+{% extends 'base.html' %}
+{% load static %}
 
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+{% block title %}Iniciar Sesión{% endblock %}
 
-            try {
-                const response = await fetch('/login/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCSRFToken(),
-                    },
-                    body: JSON.stringify({
-                        username: username,
-                        password: password
-                    })
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-
-                    // Guardar el token en localStorage
-                    localStorage.setItem('token', data.token);
-
-                    // Redirigir al inicio
-                    window.location.href = '/inicio/';
-                } else {
-                    document.getElementById('error-message').textContent = "Credenciales inválidas.";
-                }
-            } catch (err) {
-                console.error('Error durante el login:', err);
-                document.getElementById('error-message').textContent = "Error inesperado.";
-            }
-        }
-
-        // Función para obtener el CSRF token de las cookies
-        function getCSRFToken() {
-            const cookies = document.cookie.split(';');
-            for (let cookie of cookies) {
-                if (cookie.trim().startsWith('csrftoken=')) {
-                    return cookie.trim().split('=')[1];
-                }
-            }
-            return '';
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('login-form').addEventListener('submit', handleLogin);
-        });
-    </script>
-</head>
-<body>
+{% block content %}
+<div class="login-container">
     <h1>Iniciar Sesión</h1>
-    <form id="login-form">
+
+    <form id="login-form" method="POST">
         {% csrf_token %}
-        <label for="username">Usuario:</label>
-        <input type="text" id="username" name="username" required>
-        <label for="password">Contraseña:</label>
-        <input type="password" id="password" name="password" required>
-        <button type="submit">Ingresar</button>
+
+        <div class="form-group">
+            <label for="username">Usuario:</label>
+            <input type="text" id="username" name="username" placeholder="Ingresa tu usuario" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Contraseña:</label>
+            <input type="password" id="password" name="password" placeholder="Ingresa tu contraseña" required>
+        </div>
+
+        <button type="submit">Iniciar Sesión</button>
+
         <p id="error-message" class="error"></p>
     </form>
-</body>
-</html>
+</div>
+
+<script>
+document.getElementById("login-form").addEventListener("submit", async function (event) {
+    event.preventDefault(); // Evita el envío tradicional del formulario
+
+    const formData = new FormData(this);
+    const csrfToken = formData.get('csrfmiddlewaretoken'); // Obtener token CSRF
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/login-api/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken // Agregar CSRF Token
+            },
+            body: JSON.stringify({
+                username: formData.get("username"),
+                password: formData.get("password")
+            })
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem("token", data.token); // Guardar token
+            alert("Inicio de sesión exitoso");
+            window.location.href = "/inicio/"; // Redirigir
+        } else {
+            const errorText = await response.json();
+            document.getElementById("error-message").innerText = errorText.error || "Error al iniciar sesión.";
+        }
+    } catch (error) {
+        console.error("Error en la solicitud:", error);
+        document.getElementById("error-message").innerText = "Error de conexión con el servidor.";
+    }
+});
+</script>
+{% endblock %}

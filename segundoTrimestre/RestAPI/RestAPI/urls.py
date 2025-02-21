@@ -52,11 +52,12 @@ urlpatterns = [
    path('comentarios/<int:evento_id>/', ListarComentariosAPIView.as_view(), name='listar_comentarios'),
    path('comentarios/crear/', CrearComentarioAPIView.as_view(), name='crear_comentario'),
    path('inicio/', inicio_view, name='inicio_vista'),
-   path('login/', login_view, name='login_vista'),
+   path('login/', login_view, name='login_html'),  # Devuelve el formulario HTML (vista basada en función)
+   path('login-api/', ObtainAuthToken.as_view(), name='login_api'),  # Endpoint API autenticación basado en POST
    path('detalle/<int:evento_id>/', detalle_evento_view, name='detalle_evento'),
    path('reserva/<int:evento_id>/', crear_reserva_view, name='crear_reserva'),
-   path('panel-usuario/', reservas_usuario_view, name='panel_usuario'),
-   path('login-api/', LoginUsuarioAPIView.as_view(), name='login_usuario'),
+   path('panel_usuario/', reservas_usuario_view, name='panel_usuario'),
+   # path('login-api/', LoginUsuarioAPIView.as_view(), name='login_usuario'),
    path('registrar/', RegistrarUsuarioAPIView.as_view(), name='registrar_usuario'),
    # path('api-token-auth/', ObtainAuthToken.as_view(), name='api_token_auth'),
    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

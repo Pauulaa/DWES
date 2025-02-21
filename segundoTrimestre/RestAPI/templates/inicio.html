@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,92 +9,129 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
-        }
-        header {
-            background-color: #3f51b5;
-            color: white;
-            padding: 15px 20px;
-            text-align: center;
-        }
-        h1 {
-            margin: 0;
-        }
-        #contenedor-eventos {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 10px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .evento {
-            border: 1px solid #ddd;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
             background-color: #f9f9f9;
-        }
-        .evento h2 {
-            margin: 0;
-            font-size: 18px;
             color: #333;
         }
+
+        header {
+            text-align: center;
+            background-color: #007bff;
+            color: white;
+            padding: 15px 0;
+            font-size: 2em;
+        }
+
+        #contenedor-eventos {
+            max-width: 1200px;
+            margin: 20px auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .evento {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            width: 300px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .evento img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .evento h2 {
+            font-size: 1.5em;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
         .evento p {
             margin: 5px 0;
-            color: #555;
+            font-size: 0.9em;
         }
-        .evento img {
-            width: 100%;
-            height: auto;
-            border-radius: 5px;
+
+        .btn-detalle {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            font-size: 1em;
+            border-radius: 8px;
             margin-top: 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
+
+        .btn-detalle:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
         .paginacion {
             text-align: center;
             margin: 20px 0;
         }
-        .paginacion button {
-            padding: 10px 20px;
+
+        .paginacion a {
+            display: inline-block;
+            padding: 10px 15px;
             margin: 5px;
-            border: none;
-            background-color: #3f51b5;
+            background-color: #007bff;
             color: white;
-            cursor: pointer;
-            border-radius: 3px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
         }
-        .paginacion button:disabled {
+
+        .paginacion a:disabled {
             background-color: #bbb;
             cursor: not-allowed;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Lista de Eventos</h1>
-    </header>
+    <header>Lista de Eventos</header>
     <div id="contenedor-eventos">
-        <!-- Aquí puedes insertar los datos de los eventos directamente desde Django -->
         {% for evento in eventos %}
-        <div class="evento">
-            <h2>{{ evento.titulo }}</h2>
-            <p><img src = "{{ evento.imagen_url }}"/></p>
-            <p><strong>Descripción:</strong> {{ evento.descripcion }}</p>
-            <p><strong>Fecha y hora:</strong> {{ evento.fecha_hora }}</p>
-            <p><strong>Capacidad:</strong> {{ evento.capacidad }}</p>
-            <p><strong>Película:</strong> {{ evento.pelicula }}</p>
-            <p><strong>Organizador:</strong> {{ evento.organizador }}</p>
-            <a href="{% url 'detalle_evento' evento.id%}">Hacer una reserva</a>
-        </div>
+            <div class="evento">
+                <h2>{{ evento.titulo }}</h2>
+                <img src="{{ evento.imagen_url }}" alt="Imagen del evento">
+                <p><strong>Fecha:</strong> {{ evento.fecha_hora }}</p>
+                <p><strong>Descripción:</strong> {{ evento.descripcion }}</p>
+                <a href="{% url 'detalle_evento' evento.id %}" class="btn-detalle">Ver Detalles</a>
+            </div>
+        {% empty %}
+            <p style="text-align: center; width: 100%;">No hay eventos disponibles.</p>
         {% endfor %}
     </div>
+
+    <!-- Paginación -->
     <div class="paginacion">
-        <button {% if not eventos.has_previous %}disabled{% endif %}>
+        {% if eventos.has_previous %}
             <a href="?page={{ eventos.previous_page_number }}">Anterior</a>
-        </button>
-        <button {% if not eventos.has_next %}disabled{% endif %}>
+        {% endif %}
+        {% if eventos.has_next %}
             <a href="?page={{ eventos.next_page_number }}">Siguiente</a>
-        </button>
+        {% endif %}
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('No estás autenticado. Redirigiendo al login.');
+                window.location.href = '/login/';
+            } else {
+                console.log('Usuario autenticado.');
+            }
+        });
+    </script>
 </body>
 </html>
